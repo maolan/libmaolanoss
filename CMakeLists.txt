@@ -53,5 +53,5 @@ add_compile_options(-Wall)
 
 add_library(maolanoss SHARED ${SRCS} ${MY_HEADERS})
 add_dependencies(build-tests maolanoss)
-target_link_libraries(maolanoss ${MY_LIBRARIES})
+target_link_libraries(maolanoss ${MY_LIBRARIES} nv)
 install(TARGETS maolanoss LIBRARY DESTINATION lib)
