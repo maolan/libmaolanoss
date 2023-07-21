@@ -17,14 +17,14 @@ int main()
   auto *audioDevices = oss.audio.list();
   for (const auto &device : *audioDevices)
   {
-    std::cout << device->name() << std::endl;
+    std::cout << device->name() << ' ' << device->device() << std::endl;
   }
   delete audioDevices;
 
   auto *midiDevices = oss.midi.list();
   for (const auto &device : *midiDevices)
   {
-    std::cout << device->name() << std::endl;
+    std::cout << device->name() << ' ' << device->device() << std::endl;
   }
   delete midiDevices;
   return 0;

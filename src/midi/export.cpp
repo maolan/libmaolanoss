@@ -24,11 +24,13 @@ extern "C" std::vector<HW *> * listMidi()
   HW *hw;
   glob_t g = {0};
   auto *devices = new std::vector<HW *>;
+  std::string midistat = "/dev/midistat";
 
   glob("/dev/midi*", GLOB_DOOFFS, nullptr, &g);
   glob("/dev/umidi*", GLOB_DOOFFS | GLOB_APPEND, nullptr, &g);
   for (size_t i = 0; i < g.gl_pathc; ++i)
   {
+    if (g.gl_pathv[i] == midistat) { continue; }
     hw = new HW(g.gl_pathv[i], g.gl_pathv[i]);
     devices->push_back(hw);
   }
