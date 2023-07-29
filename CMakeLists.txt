@@ -6,10 +6,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 include(GNUInstallDirs)
 
 file(GLOB SRCS src/*.cpp src/audio/*.cpp src/midi/*.cpp)
-file(GLOB HEADERS maolan/audio/*.hpp)
+file(GLOB HEADERS maolan/audio/oss/*.hpp)
 install(FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/maolan/audio/oss)
 set(MY_HEADERS ${MY_HEADEARS} ${HEADERS})
-file(GLOB HEADERS maolan/midi/*.hpp)
+file(GLOB HEADERS maolan/midi/oss/*.hpp)
 install(FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/maolan/midi/oss)
 set(MY_HEADERS ${MY_HEADEARS} ${HEADERS})
 

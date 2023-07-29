@@ -1,12 +1,10 @@
 #pragma once
 #include <string>
 
-#include "maolan/midi/base.hpp"
+#include <maolan/midi/oss/base.hpp>
 
-namespace maolan::midi
-{
-class OSSIn : public OSS
-{
+namespace maolan::midi {
+class OSSIn : public OSS {
 public:
   OSSIn(const std::string &name, const std::string &device);
 

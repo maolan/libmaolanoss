@@ -1,13 +1,10 @@
 #pragma once
 #include <string>
 
-#include "maolan/audio/base.hpp"
+#include <maolan/audio/oss/base.hpp>
 
-
-namespace maolan::audio
-{
-template <typename T> class OSSIn : public OSS
-{
+namespace maolan::audio {
+template <typename T> class OSSIn : public OSS {
 public:
   OSSIn(const std::string &name, const std::string &device,
         const int &frag = defaultFrag);

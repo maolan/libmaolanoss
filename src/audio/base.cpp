@@ -3,56 +3,49 @@
 #include <sstream>
 #include <sys/soundcard.h>
 #include <unistd.h>
+
 #include <maolan/audio/input.hpp>
+#include <maolan/audio/oss/base.hpp>
 #include <maolan/config.hpp>
 #include <maolan/constants.hpp>
 
-#include "maolan/audio/base.hpp"
-
-
 using namespace maolan::audio;
 
-
-static void checkError(const int &value, const std::string &message)
-{
-  if (value == -1)
-  {
+static void checkError(const int &value, const std::string &message) {
+  if (value == -1) {
     throw std::invalid_argument(message);
   }
 }
 
-
 /* Calculate frag by giving it minimal size of buffer */
-static int size2frag(int x)
-{
+static int size2frag(int x) {
   int frag = 0;
-  while ((1 << frag) < x)
-  {
+  while ((1 << frag) < x) {
     ++frag;
   }
   return frag;
 }
 
-
-OSS::OSS(const std::string &name, const std::string &device, const int &sampleSize, const int &frag)
-  : HW{name, device}
-{
+OSS::OSS(const std::string &name, const std::string &device,
+         const int &sampleSize, const int &frag)
+    : HW{name, device} {
 
   int error = 0;
   int tmp;
   _frag = frag;
   _sampleSize = sampleSize;
-  if (_sampleSize == 4) { _format = AFMT_S32_NE; }
-  else if (_sampleSize == 2) { _format = AFMT_S16_NE; }
-  else if (_sampleSize == 1) { _format = AFMT_S8; }
-  else
-  {
+  if (_sampleSize == 4) {
+    _format = AFMT_S32_NE;
+  } else if (_sampleSize == 2) {
+    _format = AFMT_S16_NE;
+  } else if (_sampleSize == 1) {
+    _format = AFMT_S8;
+  } else {
     std::stringstream s;
     s << "Unsupported sample size: " << sampleSize << '\n';
     throw std::invalid_argument(s.str());
   }
-  try
-  {
+  try {
     error = open(_device.data(), O_RDWR, 0);
     checkError(error, "open");
     _fd = error;
@@ -60,15 +53,13 @@ OSS::OSS(const std::string &name, const std::string &device, const int &sampleSi
     _audioInfo.dev = -1;
     ioctl(_fd, SNDCTL_ENGINEINFO, &_audioInfo);
     _outputs.resize(_audioInfo.max_channels);
-    for (int i = 0; i < _audioInfo.max_channels; ++i)
-    {
+    for (int i = 0; i < _audioInfo.max_channels; ++i) {
       _inputs.push_back(new Input());
     }
 
     error = ioctl(_fd, SNDCTL_DSP_GETCAPS, &(_audioInfo.caps));
     checkError(error, "SNDCTL_DSP_GETCAPS");
-    if (!(_audioInfo.caps & PCM_CAP_DUPLEX))
-    {
+    if (!(_audioInfo.caps & PCM_CAP_DUPLEX)) {
       fprintf(stderr, "Device doesn't support full duplex!\n");
       exit(1);
     }
@@ -80,8 +71,7 @@ OSS::OSS(const std::string &name, const std::string &device, const int &sampleSi
     tmp = _format;
     error = ioctl(_fd, SNDCTL_DSP_SETFMT, &tmp);
     checkError(error, "SNDCTL_DSP_SETFMT");
-    if (tmp != _format)
-    {
+    if (tmp != _format) {
       std::stringstream s;
       s << _device << " doesn't support chosen sample format (";
       s << tmp << ")";
@@ -94,16 +84,16 @@ OSS::OSS(const std::string &name, const std::string &device, const int &sampleSi
     checkError(error, "SNDCTL_DSP_SPEED");
 
     int minFrag = size2frag(_sampleSize * channels());
-    if (_frag < minFrag) { _frag = minFrag; }
+    if (_frag < minFrag) {
+      _frag = minFrag;
+    }
     tmp = _frag;
     error = ioctl(_fd, SNDCTL_DSP_SETFRAGMENT, &tmp);
     checkError(error, "SNDCTL_DSP_SETFRAGMENT");
 
     error = ioctl(_fd, SNDCTL_DSP_GETOSPACE, &_bufferInfo);
     checkError(error, "SNDCTL_DSP_GETOSPACE");
-  }
-  catch (const std::invalid_argument &ex)
-  {
+  } catch (const std::invalid_argument &ex) {
     std::cerr << _type << " error: " << ex.what();
     std::cerr << ' ' << strerror(errno) << '\n';
     exit(1);
@@ -114,21 +104,16 @@ OSS::OSS(const std::string &name, const std::string &device, const int &sampleSi
   _bytes = new int8_t[_bufferInfo.bytes];
 }
 
-
-nlohmann::json OSS::json()
-{
+nlohmann::json OSS::json() {
   auto data = IO::json();
   data["bits"] = _sampleSize * 8;
   data["samplerate"] = Config::samplerate;
   return data;
 }
 
-
-OSS::~OSS()
-{
+OSS::~OSS() {
   close(_fd);
   delete _bytes;
 }
-
 
 size_t OSS::channels() const { return _outputs.size(); }

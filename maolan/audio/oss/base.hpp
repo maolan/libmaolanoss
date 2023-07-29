@@ -7,13 +7,11 @@
 #include <maolan/audio/io.hpp>
 #include <maolan/constants.hpp>
 
-
-namespace maolan::audio
-{
-class OSS : public HW
-{
+namespace maolan::audio {
+class OSS : public HW {
 public:
-  OSS(const std::string &name, const std::string &device, const int &sampleSize, const int &fragSize = defaultFrag);
+  OSS(const std::string &name, const std::string &device, const int &sampleSize,
+      const int &fragSize = defaultFrag);
   ~OSS();
 
   virtual size_t channels() const;
