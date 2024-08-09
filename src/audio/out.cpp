@@ -6,6 +6,7 @@
 
 #include <maolan/audio/oss/out.hpp>
 #include <maolan/constants.hpp>
+#include <maolan/audio/output.hpp>
 
 using namespace maolan::audio;
 
@@ -19,7 +20,7 @@ OSSOut<T>::OSSOut(const std::string &name, const std::string &device,
 template <typename T> void OSSOut<T>::fetch() {
   OSS::fetch();
   for (size_t i = 0; i < OSS::channels(); ++i) {
-    _outputs[i] = _inputs[i]->pull();
+    _outputs[i]->buffer(_inputs[i]->pull());
   }
 }
 
@@ -27,14 +28,14 @@ template <typename T> void OSSOut<T>::process() {
   T *samples = (T *)_bytes;
   auto chs = OSS::channels();
   for (std::size_t channel = 0; channel < chs; ++channel) {
-    auto buffer = OSS::_outputs[channel];
-    if (buffer == nullptr) {
+    auto out = OSS::_outputs[channel];
+    if (out == nullptr) {
       for (std::size_t i = 0; i < Config::audioBufferSize; ++i) {
         samples[i * chs + channel] = 0;
       }
     } else {
       for (std::size_t i = 0; i < Config::audioBufferSize; ++i) {
-        auto &sample = buffer->data()[i];
+        auto &sample = out->buffer()->data()[i];
         if (sample <= -1.0) {
           sample = -1.0;
         } else if (sample >= 1.0) {

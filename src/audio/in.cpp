@@ -2,6 +2,7 @@
 
 #include <maolan/audio/oss/in.hpp>
 #include <maolan/constants.hpp>
+#include <maolan/audio/output.hpp>
 
 using namespace maolan::audio;
 
@@ -22,12 +23,13 @@ template <class T> void OSSIn<T>::process() {
   size_t index;
   T *samples = (T *)_bytes;
   for (size_t i = 0; i < chs; ++i) {
-    _outputs[i] = std::make_shared<BufferData>(Config::audioBufferSize);
+    // TODO: this is memory leak, fix it!
+    _outputs[i] = new Output();
   }
   for (size_t i = 0; i < Config::audioBufferSize; ++i) {
     channel = i % chs;
     index = i / chs;
-    _outputs[channel]->data()[index] = samples[i] / floatMaxInt;
+    _outputs[channel]->buffer()->data()[index] = samples[i] / floatMaxInt;
   }
 }
 
