@@ -5,6 +5,7 @@
 #include <unistd.h>
 
 #include <maolan/audio/input.hpp>
+#include <maolan/audio/output.hpp>
 #include <maolan/audio/oss/base.hpp>
 #include <maolan/config.hpp>
 #include <maolan/constants.hpp>
@@ -52,10 +53,8 @@ OSS::OSS(const std::string &name, const std::string &device,
 
     _audioInfo.dev = -1;
     ioctl(_fd, SNDCTL_ENGINEINFO, &_audioInfo);
+    _inputs.resize(_audioInfo.max_channels);
     _outputs.resize(_audioInfo.max_channels);
-    for (int i = 0; i < _audioInfo.max_channels; ++i) {
-      _inputs.push_back(new Input());
-    }
 
     error = ioctl(_fd, SNDCTL_DSP_GETCAPS, &(_audioInfo.caps));
     checkError(error, "SNDCTL_DSP_GETCAPS");
@@ -102,6 +101,11 @@ OSS::OSS(const std::string &name, const std::string &device,
   _sampleCount = _bufferInfo.bytes / _sampleSize;
   Config::audioBufferSize = _sampleCount / channels();
   _bytes = new int8_t[_bufferInfo.bytes];
+
+  for (int i = 0; i < _audioInfo.max_channels; ++i) {
+    _inputs[i] = new Input();
+    _outputs[i] = new Output();
+  }
 }
 
 nlohmann::json OSS::json() {
