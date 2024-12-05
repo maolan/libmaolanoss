@@ -53,6 +53,8 @@ template <class T> void OSSOut<T>::writehw() {
   write(_fd, _bytes, _bufferInfo.bytes);
 }
 
+template <class T> size_t OSSOut<T>::connected() const { return SIZE_MAX; }
+
 namespace maolan::audio {
 template class OSSOut<int32_t>;
 template class OSSOut<int16_t>;

@@ -1,8 +1,8 @@
 #include <unistd.h>
 
 #include <maolan/audio/oss/in.hpp>
-#include <maolan/constants.hpp>
 #include <maolan/audio/output.hpp>
+#include <maolan/constants.hpp>
 
 using namespace maolan::audio;
 
@@ -32,6 +32,8 @@ template <class T> void OSSIn<T>::process() {
     _outputs[channel]->buffer()->data()[index] = samples[i] / floatMaxInt;
   }
 }
+
+template <class T> size_t OSSIn<T>::connected() const { return 0; }
 
 namespace maolan::audio {
 template class OSSIn<int32_t>;

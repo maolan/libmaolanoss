@@ -11,5 +11,6 @@ public:
 
   virtual void readhw();
   virtual void process();
+  virtual size_t connected() const;
 };
 } // namespace maolan::audio
