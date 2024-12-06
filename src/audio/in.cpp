@@ -6,14 +6,12 @@
 
 using namespace maolan::audio;
 
+OSSIn *OSSIn::_hw = nullptr;
+
 OSSIn::OSSIn(const std::string &name, const std::string &device,
-                const int &frag)
+             const int &frag)
     : OSS{name, device, frag} {
   _type = "AudioOSSIn";
-}
-
-void OSSIn::readhw() {
-  read(_fd, _bytes, _bufferInfo.bytes);
 }
 
 void OSSIn::process() {
@@ -32,4 +30,6 @@ void OSSIn::process() {
   }
 }
 
+OSSIn::~OSSIn() { _hw = nullptr; }
+void OSSIn::readhw() { read(_fd, _bytes, _bufferInfo.bytes); }
 size_t OSSIn::connected() const { return 0; }

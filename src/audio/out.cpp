@@ -10,8 +10,10 @@
 
 using namespace maolan::audio;
 
+OSSOut *OSSOut::_hw = nullptr;
+
 OSSOut::OSSOut(const std::string &name, const std::string &device,
-                  const int &frag)
+               const int &frag)
     : OSS{name, device, frag} {
   _type = "AudioOSSOut";
 }
@@ -48,8 +50,6 @@ void OSSOut::process() {
   }
 }
 
-void OSSOut::writehw() {
-  write(_fd, _bytes, _bufferInfo.bytes);
-}
-
+OSSOut::~OSSOut() { _hw = nullptr; }
+void OSSOut::writehw() { write(_fd, _bytes, _bufferInfo.bytes); }
 size_t OSSOut::connected() const { return SIZE_MAX; }

@@ -10,12 +10,18 @@ using namespace maolan::audio;
 
 extern "C" HW *createAudioOut(const std::string &name,
                               const std::string &device) {
-  return new OSSOut{name, device};
+  if (OSSOut::_hw == nullptr) {
+    OSSOut::_hw = new OSSOut{name, device};
+  }
+  return OSSOut::_hw;
 }
 
 extern "C" HW *createAudioIn(const std::string &name,
                              const std::string &device) {
-  return new OSSIn{name, device};
+  if (OSSIn::_hw == nullptr) {
+    OSSIn::_hw = new OSSIn{name, device};
+  }
+  return OSSIn::_hw;
 }
 
 extern "C" std::vector<HW *> *listAudio() {
