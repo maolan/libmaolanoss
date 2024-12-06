@@ -4,7 +4,7 @@
 #include <maolan/audio/oss/base.hpp>
 
 namespace maolan::audio {
-template <typename T> class OSSIn : public OSS {
+class OSSIn : public OSS {
 public:
   OSSIn(const std::string &name, const std::string &device,
         const int &frag = defaultFrag);

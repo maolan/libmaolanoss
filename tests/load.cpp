@@ -7,8 +7,8 @@ using namespace maolan;
 int main() {
   DynamicHW oss{"./libmaolanoss.so"};
 
-  oss.audio.out("OssAudioOut", "/dev/dsp", 4);
-  oss.audio.in("OssAudioOut", "/dev/dsp", 4);
+  oss.audio.out("OssAudioOut", "/dev/dsp");
+  oss.audio.in("OssAudioOut", "/dev/dsp");
   oss.midi.out("OssMidiOut", "/dev/dsp");
   oss.midi.in("OssMidiIn", "/dev/dsp");
 

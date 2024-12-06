@@ -6,22 +6,21 @@
 
 using namespace maolan::audio;
 
-template <class T>
-OSSIn<T>::OSSIn(const std::string &name, const std::string &device,
+OSSIn::OSSIn(const std::string &name, const std::string &device,
                 const int &frag)
-    : OSS{name, device, sizeof(T), frag} {
+    : OSS{name, device, frag} {
   _type = "AudioOSSIn";
 }
 
-template <class T> void OSSIn<T>::readhw() {
+void OSSIn::readhw() {
   read(_fd, _bytes, _bufferInfo.bytes);
 }
 
-template <class T> void OSSIn<T>::process() {
+void OSSIn::process() {
   const auto &chs = channels();
   size_t channel;
   size_t index;
-  T *samples = (T *)_bytes;
+  int *samples = (int *)_bytes;
   for (size_t i = 0; i < chs; ++i) {
     // TODO: this is memory leak, fix it!
     _outputs[i] = new Output();
@@ -33,10 +32,4 @@ template <class T> void OSSIn<T>::process() {
   }
 }
 
-template <class T> size_t OSSIn<T>::connected() const { return 0; }
-
-namespace maolan::audio {
-template class OSSIn<int32_t>;
-template class OSSIn<int16_t>;
-template class OSSIn<int8_t>;
-} // namespace maolan::audio
+size_t OSSIn::connected() const { return 0; }

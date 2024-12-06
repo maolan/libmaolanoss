@@ -10,22 +10,21 @@
 
 using namespace maolan::audio;
 
-template <typename T>
-OSSOut<T>::OSSOut(const std::string &name, const std::string &device,
+OSSOut::OSSOut(const std::string &name, const std::string &device,
                   const int &frag)
-    : OSS{name, device, sizeof(T), frag} {
+    : OSS{name, device, frag} {
   _type = "AudioOSSOut";
 }
 
-template <typename T> void OSSOut<T>::fetch() {
+void OSSOut::fetch() {
   OSS::fetch();
   for (size_t i = 0; i < channels(); ++i) {
     _outputs[i]->buffer(_inputs[i]->pull());
   }
 }
 
-template <typename T> void OSSOut<T>::process() {
-  T *samples = (T *)_bytes;
+void OSSOut::process() {
+  int *samples = (int *)_bytes;
   auto chs = channels();
   for (size_t channel = 0; channel < chs; ++channel) {
     auto out = _outputs[channel];
@@ -49,14 +48,8 @@ template <typename T> void OSSOut<T>::process() {
   }
 }
 
-template <class T> void OSSOut<T>::writehw() {
+void OSSOut::writehw() {
   write(_fd, _bytes, _bufferInfo.bytes);
 }
 
-template <class T> size_t OSSOut<T>::connected() const { return SIZE_MAX; }
-
-namespace maolan::audio {
-template class OSSOut<int32_t>;
-template class OSSOut<int16_t>;
-template class OSSOut<int8_t>;
-} // namespace maolan::audio
+size_t OSSOut::connected() const { return SIZE_MAX; }

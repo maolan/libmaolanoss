@@ -5,8 +5,8 @@
 #include <unistd.h>
 
 #include <maolan/audio/input.hpp>
-#include <maolan/audio/output.hpp>
 #include <maolan/audio/oss/base.hpp>
+#include <maolan/audio/output.hpp>
 #include <maolan/config.hpp>
 #include <maolan/constants.hpp>
 
@@ -27,25 +27,12 @@ static int size2frag(int x) {
   return frag;
 }
 
-OSS::OSS(const std::string &name, const std::string &device,
-         const int &sampleSize, const int &frag)
+OSS::OSS(const std::string &name, const std::string &device, const int &frag)
     : HW{name, device} {
-
   int error = 0;
   int tmp;
   _frag = frag;
-  _sampleSize = sampleSize;
-  if (_sampleSize == 4) {
-    _format = AFMT_S32_NE;
-  } else if (_sampleSize == 2) {
-    _format = AFMT_S16_NE;
-  } else if (_sampleSize == 1) {
-    _format = AFMT_S8;
-  } else {
-    std::stringstream s;
-    s << "Unsupported sample size: " << sampleSize << '\n';
-    throw std::invalid_argument(s.str());
-  }
+  _format = AFMT_S32_NE;
   try {
     error = open(_device.data(), O_RDWR, 0);
     checkError(error, "open");
@@ -82,7 +69,7 @@ OSS::OSS(const std::string &name, const std::string &device,
     error = ioctl(_fd, SNDCTL_DSP_SPEED, &tmp);
     checkError(error, "SNDCTL_DSP_SPEED");
 
-    int minFrag = size2frag(_sampleSize * channels());
+    int minFrag = size2frag(sizeof(int) * channels());
     if (_frag < minFrag) {
       _frag = minFrag;
     }
@@ -98,7 +85,7 @@ OSS::OSS(const std::string &name, const std::string &device,
     exit(1);
   }
 
-  _sampleCount = _bufferInfo.bytes / _sampleSize;
+  _sampleCount = _bufferInfo.bytes / sizeof(int);
   Config::audioBufferSize = _sampleCount / channels();
   _bytes = new int8_t[_bufferInfo.bytes];
 
@@ -110,7 +97,7 @@ OSS::OSS(const std::string &name, const std::string &device,
 
 nlohmann::json OSS::json() {
   auto data = IO::json();
-  data["bits"] = _sampleSize * 8;
+  data["bits"] = sizeof(int) * 8;
   data["samplerate"] = Config::samplerate;
   return data;
 }

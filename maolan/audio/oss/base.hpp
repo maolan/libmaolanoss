@@ -10,7 +10,7 @@
 namespace maolan::audio {
 class OSS : public HW {
 public:
-  OSS(const std::string &name, const std::string &device, const int &sampleSize,
+  OSS(const std::string &name, const std::string &device,
       const int &fragSize = defaultFrag);
   ~OSS();
 
@@ -24,6 +24,5 @@ protected:
   int _sampleCount;
   oss_audioinfo _audioInfo;
   audio_buf_info _bufferInfo;
-  std::size_t _sampleSize;
 };
 } // namespace maolan::audio
