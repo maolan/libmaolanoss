@@ -18,7 +18,6 @@ int main(int argc, char **argv) {
     if (maolan::Engine::load(argv[1]) == nullptr) {
       return 1;
     }
-    maolan::Engine::setup();
 
     std::cerr << "Playing ...";
     maolan::Engine::play();
