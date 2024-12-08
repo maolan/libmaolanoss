@@ -36,15 +36,21 @@ void OSSOut::process() {
       }
     } else {
       const auto &buffer = out->buffer();
-      const auto &data = buffer->data();
-      for (size_t i = 0; i < buffer->size(); ++i) {
-        auto &sample = data[i];
-        if (sample <= -1.0) {
-          sample = -1.0;
-        } else if (sample >= 1.0) {
-          sample = 1.0;
+      if (buffer) {
+        const auto &data = buffer->data();
+        for (size_t i = 0; i < buffer->size(); ++i) {
+          auto &sample = data[i];
+          if (sample <= -1.0) {
+            sample = -1.0;
+          } else if (sample >= 1.0) {
+            sample = 1.0;
+          }
+          samples[i * chs + channel] = sample * floatMaxInt;
         }
-        samples[i * chs + channel] = sample * floatMaxInt;
+      } else {
+        for (std::size_t i = 0; i < Config::audioBufferSize; ++i) {
+          samples[i * chs + channel] = 0;
+        }
       }
     }
   }
